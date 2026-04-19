@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sweet Scoop Shop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Baloo+2:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <section class="screen screen-active" id="start-screen">
+      <div class="card hero-card">
+        <p class="eyebrow">Welcome to the cutest shop in town</p>
+        <h1>Sweet Scoop Shop</h1>
+        <p class="hero-copy">
+          Serve adorable customers, build the right ice cream, earn dollars, and buy cute new flavors and cups.
+        </p>
+
+        <div class="hero-preview" aria-hidden="true">
+          <div class="preview-customer animal-mascots">
+            <div class="mascot">
+              <span class="mascot-emoji">🐱</span>
+              <span class="mascot-label">Mochi</span>
+            </div>
+            <div class="mascot">
+              <span class="mascot-emoji">🐶</span>
+              <span class="mascot-label">Biscuit</span>
+            </div>
+          </div>
+          <div class="preview-icecream">
+            <div class="preview-scoop strawberry"></div>
+            <div class="preview-scoop vanilla"></div>
+            <div class="preview-cone"></div>
+          </div>
+        </div>
+
+        <div class="shopkeeper-card" aria-hidden="true">
+          <div class="shopkeeper-avatar">🐱</div>
+          <div>
+            <p class="eyebrow">Shopkeeper</p>
+            <p class="shopkeeper-copy">Mochi says: Earn dollars, unlock treats, and make the shop sparkle.</p>
+          </div>
+        </div>
+
+        <div class="rules">
+          <div class="rule-pill">1 customer at a time</div>
+          <div class="rule-pill">60 seconds</div>
+          <div class="rule-pill">Bunny bonus visit</div>
+          <div class="rule-pill">Shop unlocks</div>
+        </div>
+
+        <div class="shop-panel">
+          <div class="shop-header">
+            <div>
+              <p class="eyebrow">Sweet Shop</p>
+              <h2>Spend Your Dollars</h2>
+            </div>
+            <div class="wallet-badge">Dollars: $<span id="wallet-amount">0</span></div>
+          </div>
+          <p class="shop-copy">Every 5 score gives you $1. Your money and unlocks are saved for next time.</p>
+          <div class="shop-items" id="shop-items"></div>
+        </div>
+
+        <div class="menu-panel">
+          <div class="shop-header">
+            <div>
+              <p class="eyebrow">Today's Menu</p>
+              <h2>Choose What To Sell</h2>
+            </div>
+          </div>
+          <p class="shop-copy">Pick which unlocked flavors and cups are on sale this round.</p>
+          <div class="menu-groups">
+            <div class="menu-group">
+              <h3>Flavors</h3>
+              <div class="menu-options" id="sell-flavor-options"></div>
+            </div>
+            <div class="menu-group">
+              <h3>Containers</h3>
+              <div class="menu-options" id="sell-container-options"></div>
+            </div>
+          </div>
+        </div>
+
+        <button class="primary-button" id="start-button">Play</button>
+      </div>
+    </section>
+
+    <section class="screen" id="game-screen">
+      <div class="top-bar card">
+        <div class="stat">
+          <span class="stat-label">Score</span>
+          <span class="stat-value" id="score">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Time</span>
+          <span class="stat-value" id="timer">60</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Streak</span>
+          <span class="stat-value" id="streak">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Dollars</span>
+          <span class="stat-value" id="game-wallet">0</span>
+        </div>
+      </div>
+
+      <div class="game-layout">
+        <section class="card customer-card">
+          <div class="customer-header">
+            <div class="customer-avatar">
+              <span class="customer-emoji" id="customer-emoji">🐱</span>
+            </div>
+            <div>
+              <p class="eyebrow">Now serving</p>
+              <h2 id="customer-name">Mimi</h2>
+              <p class="customer-subtitle" id="customer-subtitle">Kitten who loves sweet treats</p>
+            </div>
+          </div>
+
+          <div class="order-bubble">
+            <p class="order-title">Order</p>
+            <p class="order-line special-order" id="order-special"></p>
+            <p class="order-line" id="order-container">Cup</p>
+            <p class="order-line" id="order-flavor">Vanilla</p>
+            <p class="order-line" id="order-topping">No topping</p>
+            <div class="second-order" id="second-order">
+              <p class="order-title second-order-title">Second ice cream</p>
+              <p class="order-line" id="order2-container">Cone</p>
+              <p class="order-line" id="order2-flavor">Chocolate</p>
+              <p class="order-line" id="order2-topping">Sprinkles</p>
+            </div>
+          </div>
+
+          <p class="reaction" id="reaction-message">Pick the ingredients and press Serve.</p>
+        </section>
+
+        <section class="card builder-card">
+          <div class="builder-header">
+            <div>
+              <p class="eyebrow">Build the order</p>
+              <h2>Your Ice Cream</h2>
+            </div>
+            <button class="secondary-button" id="reset-button" type="button">Reset</button>
+          </div>
+
+          <div class="icecream-stage">
+            <div class="icecream-preview" id="icecream-preview">
+              <div class="preview-empty">Choose a cup or cone to begin</div>
+            </div>
+            <div class="sparkle-layer" id="sparkle-layer" aria-hidden="true"></div>
+          </div>
+
+          <div class="builder-controls">
+            <div class="control-group">
+              <h3>Container</h3>
+              <div class="option-row" id="container-options"></div>
+            </div>
+
+            <div class="control-group">
+              <h3>Flavor</h3>
+              <div class="option-row" id="flavor-options"></div>
+            </div>
+
+            <div class="control-group">
+              <h3>Topping</h3>
+              <div class="option-row" id="topping-options"></div>
+            </div>
+          </div>
+
+          <button class="primary-button serve-button" id="serve-button" type="button">Serve</button>
+        </section>
+      </div>
+    </section>
+
+    <section class="screen" id="result-screen">
+      <div class="card result-card">
+        <p class="eyebrow">Shift finished</p>
+        <h2>Ice Cream Time Is Over</h2>
+        <p class="final-score">Final score: <span id="final-score">0</span></p>
+        <p class="final-score">Dollars: $<span id="final-wallet">0</span></p>
+        <p class="final-message" id="final-message">You made the shop sparkle.</p>
+        <button class="primary-button" id="play-again-button">Back To Shop</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="./script.js"></script>
+</body>
+</html>
