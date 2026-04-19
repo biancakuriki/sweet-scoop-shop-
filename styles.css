@@ -224,6 +224,14 @@ h3 {
   margin: 0;
 }
 
+.instruction-card {
+  margin: 0 0 22px;
+  padding: 20px 22px;
+  text-align: left;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(240, 251, 255, 0.84));
+}
+
 .rules {
   display: flex;
   flex-wrap: wrap;
@@ -265,6 +273,14 @@ h3 {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(234, 248, 255, 0.82));
 }
 
+.chart-panel {
+  margin: 0 0 28px;
+  padding: 22px;
+  text-align: left;
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(255, 239, 220, 0.84));
+}
+
 .shop-header {
   display: flex;
   justify-content: space-between;
@@ -294,6 +310,43 @@ h3 {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 16px;
+}
+
+.leaderboard-list {
+  display: grid;
+  gap: 12px;
+}
+
+.leaderboard-row {
+  display: grid;
+  grid-template-columns: 70px 1fr 110px 110px;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 8px 18px rgba(147, 96, 120, 0.08);
+}
+
+.leaderboard-rank {
+  font-weight: 700;
+  color: #a4541a;
+}
+
+.leaderboard-name {
+  font-weight: 700;
+}
+
+.leaderboard-stat {
+  color: var(--muted);
+  text-align: right;
+}
+
+.leaderboard-empty {
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--muted);
 }
 
 .menu-group {
@@ -744,6 +797,50 @@ h3 {
   font-weight: 700;
 }
 
+.hidden {
+  display: none !important;
+}
+
+.phoenix-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(72, 35, 31, 0.34);
+  backdrop-filter: blur(6px);
+}
+
+.phoenix-card {
+  width: min(560px, 100%);
+  padding: 28px;
+  text-align: center;
+  background: linear-gradient(180deg, rgba(255, 250, 242, 0.96), rgba(255, 233, 210, 0.95));
+}
+
+.phoenix-hero {
+  margin-bottom: 12px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #a4541a;
+}
+
+.phoenix-copy {
+  margin: 14px 0 0;
+  font-size: 1.08rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.phoenix-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 22px;
+  flex-wrap: wrap;
+}
+
 @keyframes sparkle-pop {
   0% {
     transform: translateY(8px) scale(0.6) rotate(0deg);
@@ -791,5 +888,13 @@ h3 {
   .shopkeeper-card {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .leaderboard-row {
+    grid-template-columns: 1fr;
+  }
+
+  .leaderboard-stat {
+    text-align: left;
   }
 }

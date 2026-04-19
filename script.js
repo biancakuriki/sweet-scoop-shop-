@@ -1,4 +1,12 @@
 const STORAGE_KEY = "sweet-scoop-shop-save-v1";
+const LEADERBOARD_LIMIT = 5;
+const BASE_SHOP_PAGE_SIZE = 3;
+const LEVEL_2_SHOP_PAGE_SIZE = 5;
+const SHOP_ROTATE_EVERY_ROUNDS = 2;
+const PHOENIX_FIRST_ROUND = 15;
+const PHOENIX_RETURN_GAP = 10;
+const PHOENIX_SHOP_COST = 150;
+const SPECIAL_LEVEL_TIME = 45;
 
 const customers = [
   { name: "Mimi", emoji: "🐱", subtitle: "Kitten who loves sweet treats" },
@@ -116,6 +124,7 @@ const toppingOptionsEl = document.getElementById("topping-options");
 const shopItemsEl = document.getElementById("shop-items");
 const sellFlavorOptionsEl = document.getElementById("sell-flavor-options");
 const sellContainerOptionsEl = document.getElementById("sell-container-options");
+const leaderboardListEl = document.getElementById("leaderboard-list");
 
 const startScreen = document.getElementById("start-screen");
 const gameScreen = document.getElementById("game-screen");
@@ -125,6 +134,11 @@ const startButton = document.getElementById("start-button");
 const serveButton = document.getElementById("serve-button");
 const resetButton = document.getElementById("reset-button");
 const playAgainButton = document.getElementById("play-again-button");
+const phoenixModalEl = document.getElementById("phoenix-modal");
+const phoenixTitleEl = document.getElementById("phoenix-title");
+const phoenixMessageEl = document.getElementById("phoenix-message");
+const phoenixAcceptButton = document.getElementById("phoenix-accept-button");
+const phoenixCloseButton = document.getElementById("phoenix-close-button");
 
 let score = 0;
 let streak = 0;
@@ -140,6 +154,15 @@ let unlockedContainers = [...baseContainers];
 let unlockedFlavors = [...baseFlavors];
 let activeContainers = [...baseContainers];
 let activeFlavors = [...baseFlavors];
+let roundsPlayed = 0;
+let shopRotationIndex = 0;
+let shopLevel = 1;
+let nextPhoenixRound = PHOENIX_FIRST_ROUND;
+let phoenixOfferPending = false;
+let pendingSpecialLevel = false;
+let specialLevelPlayed = false;
+let isSpecialLevelActive = false;
+let leaderboard = [];
 let audioContext = null;
 
 function createEmptySelection() {
@@ -172,6 +195,13 @@ function getSaveState() {
     unlockedFlavors,
     activeContainers,
     activeFlavors,
+    roundsPlayed,
+    shopRotationIndex,
+    shopLevel,
+    nextPhoenixRound,
+    pendingSpecialLevel,
+    specialLevelPlayed,
+    leaderboard,
   };
 }
 
@@ -205,6 +235,13 @@ function loadProgress() {
     activeFlavors = Array.isArray(saved.activeFlavors)
       ? saved.activeFlavors.filter((value) => unlockedFlavors.includes(value))
       : [...unlockedFlavors];
+    roundsPlayed = Number.isFinite(saved.roundsPlayed) ? saved.roundsPlayed : 0;
+    shopRotationIndex = Number.isFinite(saved.shopRotationIndex) ? saved.shopRotationIndex % shopCatalog.length : 0;
+    shopLevel = Number.isFinite(saved.shopLevel) ? saved.shopLevel : 1;
+    nextPhoenixRound = Number.isFinite(saved.nextPhoenixRound) ? saved.nextPhoenixRound : PHOENIX_FIRST_ROUND;
+    pendingSpecialLevel = Boolean(saved.pendingSpecialLevel);
+    specialLevelPlayed = Boolean(saved.specialLevelPlayed);
+    leaderboard = Array.isArray(saved.leaderboard) ? saved.leaderboard.slice(0, LEADERBOARD_LIMIT) : [];
 
     if (!activeContainers.length) {
       activeContainers = [...unlockedContainers];
@@ -216,6 +253,63 @@ function loadProgress() {
   } catch (error) {
     console.warn("Could not load progress.", error);
   }
+}
+
+function renderLeaderboard() {
+  leaderboardListEl.innerHTML = "";
+
+  if (!leaderboard.length) {
+    const empty = document.createElement("div");
+    empty.className = "leaderboard-empty";
+    empty.textContent = "No scores yet. Play a round and become the first ice cream star.";
+    leaderboardListEl.appendChild(empty);
+    return;
+  }
+
+  leaderboard.forEach((entry, index) => {
+    const row = document.createElement("div");
+    row.className = "leaderboard-row";
+
+    const rank = document.createElement("div");
+    rank.className = "leaderboard-rank";
+    rank.textContent = `#${index + 1}`;
+
+    const name = document.createElement("div");
+    name.className = "leaderboard-name";
+    name.textContent = entry.title;
+
+    const scoreStat = document.createElement("div");
+    scoreStat.className = "leaderboard-stat";
+    scoreStat.textContent = `Score ${entry.score}`;
+
+    const dollarStat = document.createElement("div");
+    dollarStat.className = "leaderboard-stat";
+    dollarStat.textContent = `$${entry.dollars}`;
+
+    row.appendChild(rank);
+    row.appendChild(name);
+    row.appendChild(scoreStat);
+    row.appendChild(dollarStat);
+    leaderboardListEl.appendChild(row);
+  });
+}
+
+function updateLeaderboard() {
+  const entry = {
+    title: `Round ${roundsPlayed}`,
+    score,
+    dollars,
+  };
+
+  leaderboard = [...leaderboard, entry]
+    .sort((left, right) => {
+      if (right.score !== left.score) {
+        return right.score - left.score;
+      }
+
+      return right.dollars - left.dollars;
+    })
+    .slice(0, LEADERBOARD_LIMIT);
 }
 
 function updateStats() {
@@ -274,7 +368,7 @@ function setSelectedButtons() {
 function renderShop() {
   shopItemsEl.innerHTML = "";
 
-  shopCatalog.forEach((item) => {
+  getVisibleShopItems().forEach((item) => {
     const isBought = item.group === "flavor"
       ? unlockedFlavors.includes(item.value)
       : unlockedContainers.includes(item.value);
@@ -300,6 +394,75 @@ function renderShop() {
 
     shopItemsEl.appendChild(card);
   });
+}
+
+function getVisibleShopItems() {
+  const shopPageSize = shopLevel >= 2 ? LEVEL_2_SHOP_PAGE_SIZE : BASE_SHOP_PAGE_SIZE;
+
+  if (shopCatalog.length <= shopPageSize) {
+    return [...shopCatalog];
+  }
+
+  return Array.from({ length: shopPageSize }, (_, offset) => {
+    const index = (shopRotationIndex + offset) % shopCatalog.length;
+    return shopCatalog[index];
+  });
+}
+
+function rotateShopIfNeeded() {
+  if (roundsPlayed > 0 && roundsPlayed % SHOP_ROTATE_EVERY_ROUNDS === 0) {
+    shopRotationIndex = (shopRotationIndex + 2) % shopCatalog.length;
+  }
+}
+
+function shouldShowPhoenix() {
+  return shopLevel < 2 && roundsPlayed >= nextPhoenixRound;
+}
+
+function openPhoenixModal() {
+  phoenixOfferPending = true;
+  phoenixModalEl.classList.remove("hidden");
+
+  if (dollars >= PHOENIX_SHOP_COST) {
+    phoenixTitleEl.textContent = "The phoenix offers a bigger shop";
+    phoenixMessageEl.textContent = `Hey do you whant to have a bigger shop? You have at least $${PHOENIX_SHOP_COST}, so you can buy a new shop and turn it into Level 2.`;
+    phoenixAcceptButton.classList.remove("hidden");
+    phoenixAcceptButton.disabled = false;
+    return;
+  }
+
+  phoenixTitleEl.textContent = "The phoenix will come back later";
+  phoenixMessageEl.textContent = "Hey do you whant to have a bigger shop? You do not have 500 yet. After you play ten rounds i will come back.";
+  phoenixAcceptButton.classList.add("hidden");
+  phoenixAcceptButton.disabled = true;
+  nextPhoenixRound = roundsPlayed + PHOENIX_RETURN_GAP;
+  saveProgress();
+}
+
+function closePhoenixModal() {
+  phoenixOfferPending = false;
+  phoenixModalEl.classList.add("hidden");
+}
+
+function upgradeToLevel2Shop() {
+  if (dollars < PHOENIX_SHOP_COST || shopLevel >= 2) {
+    return;
+  }
+
+  dollars -= PHOENIX_SHOP_COST;
+  shopLevel = 2;
+  phoenixOfferPending = false;
+  nextPhoenixRound = Number.MAX_SAFE_INTEGER;
+  if (!specialLevelPlayed) {
+    pendingSpecialLevel = true;
+  }
+  saveProgress();
+  updateStats();
+  renderShop();
+  closePhoenixModal();
+  playSuccessSound();
+  createSparkles(14);
+  setReaction("The phoenix made your shop bigger. Welcome to Level 2! A special level is waiting.");
 }
 
 function renderSellMenu() {
@@ -587,14 +750,24 @@ function startGame() {
   ensureAudio();
   score = 0;
   streak = 0;
-  timeLeft = 60;
+  isSpecialLevelActive = pendingSpecialLevel && !specialLevelPlayed;
+  timeLeft = isSpecialLevelActive ? SPECIAL_LEVEL_TIME : 60;
   bunnyBonusShown = false;
   bunnyOrderProgress = 0;
   scoreDollarStepsAwarded = 0;
+  if (isSpecialLevelActive) {
+    pendingSpecialLevel = false;
+    specialLevelPlayed = true;
+    saveProgress();
+  }
   updateStats();
   resetBuilder();
   generateOrder();
-  setReaction("Pick the ingredients and press Serve.");
+  if (isSpecialLevelActive) {
+    setReaction("Special Level! Magical orders give extra rewards in your new shop.");
+  } else {
+    setReaction("Pick the ingredients and press Serve.");
+  }
   showScreen(gameScreen);
 
   clearInterval(timerId);
@@ -612,18 +785,31 @@ function endGame() {
   clearInterval(timerId);
   timerId = null;
 
+  roundsPlayed += 1;
+  rotateShopIfNeeded();
+
   finalScoreEl.textContent = score;
   finalWalletEl.textContent = dollars;
   finalMessageEl.textContent =
-    score >= 120
-      ? "You ran a superstar ice cream shop!"
-      : score >= 70
-        ? "That was a sweet and happy shift."
-        : "Your customers still had lots of fun.";
+    isSpecialLevelActive
+      ? "You finished the one-time special level!"
+      : score >= 120
+        ? "You ran a superstar ice cream shop!"
+        : score >= 70
+          ? "That was a sweet and happy shift."
+          : "Your customers still had lots of fun.";
 
   saveProgress();
+  updateLeaderboard();
+  saveProgress();
   renderShop();
+  renderSellMenu();
+  renderLeaderboard();
   showScreen(resultScreen);
+
+  if (shouldShowPhoenix()) {
+    openPhoenixModal();
+  }
 }
 
 function isSelectionComplete() {
@@ -658,10 +844,16 @@ function handleBunnyServe() {
   if (bunnyOrderProgress >= currentOrder.orders.length) {
     streak = 0;
     score += 10;
+    dollars += isSpecialLevelActive ? 15 : 10;
     awardDollarsFromScore();
     bunnyOrderProgress = 0;
     createSparkles(12);
-    setReaction("Bunny bonus complete! She happily takes both ice creams.");
+    setReaction(
+      isSpecialLevelActive
+        ? "Special bunny bonus complete! You earned extra rewards."
+        : "Bunny bonus complete! She happily takes both ice creams."
+    );
+    saveProgress();
     updateStats();
     resetBuilder();
     generateOrder();
@@ -695,9 +887,19 @@ function handleServe() {
     streak += 1;
     score += 10 + (streak >= 3 ? 5 : 0);
     awardDollarsFromScore();
+    if (isSpecialLevelActive) {
+      dollars += 1;
+      saveProgress();
+    }
     createSparkles(streak >= 3 ? 10 : 6);
     playSuccessSound();
-    setReaction(streak >= 3 ? "Perfect order! Bonus points for your streak!" : "Yummy! That's exactly right.");
+    setReaction(
+      isSpecialLevelActive
+        ? "Special Level reward! Magical orders give extra goodies."
+        : streak >= 3
+          ? "Perfect order! Bonus points for your streak!"
+          : "Yummy! That's exactly right."
+    );
   } else {
     streak = 0;
     score = Math.max(0, score - 3);
@@ -740,6 +942,8 @@ playAgainButton.addEventListener("click", () => {
   renderShop();
   showScreen(startScreen);
 });
+phoenixAcceptButton.addEventListener("click", upgradeToLevel2Shop);
+phoenixCloseButton.addEventListener("click", closePhoenixModal);
 resetButton.addEventListener("click", () => {
   resetBuilder();
   setReaction("Your ice cream was cleared. Build the order again.");
@@ -750,6 +954,7 @@ loadProgress();
 renderOptions();
 renderShop();
 renderSellMenu();
+renderLeaderboard();
 renderPreview();
 updateStats();
 showScreen(startScreen);

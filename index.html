@@ -45,6 +45,15 @@
           </div>
         </div>
 
+        <div class="instruction-card">
+          <p class="eyebrow">How To Play</p>
+          <h2>Mochi's Instructions</h2>
+          <p class="shopkeeper-copy">
+            First choose what you want to sell. Then press Play, look at the customer's order, build the ice cream, and press Serve.
+            Every 5 score gives you $1. The bunny gives a special bonus, and later the phoenix may offer you a bigger shop.
+          </p>
+        </div>
+
         <div class="rules">
           <div class="rule-pill">1 customer at a time</div>
           <div class="rule-pill">60 seconds</div>
@@ -60,7 +69,7 @@
             </div>
             <div class="wallet-badge">Dollars: $<span id="wallet-amount">0</span></div>
           </div>
-          <p class="shop-copy">Every 5 score gives you $1. Your money and unlocks are saved for next time.</p>
+          <p class="shop-copy">Every 5 score gives you $1. Your money and unlocks are saved, and the shop changes every 2 rounds.</p>
           <div class="shop-items" id="shop-items"></div>
         </div>
 
@@ -82,6 +91,16 @@
               <div class="menu-options" id="sell-container-options"></div>
             </div>
           </div>
+        </div>
+
+        <div class="chart-panel">
+          <div class="shop-header">
+            <div>
+              <p class="eyebrow">Leaderboard</p>
+              <h2>Top Ice Cream Stars</h2>
+            </div>
+          </div>
+          <div class="leaderboard-list" id="leaderboard-list"></div>
         </div>
 
         <button class="primary-button" id="start-button">Play</button>
@@ -186,6 +205,18 @@
         <button class="primary-button" id="play-again-button">Back To Shop</button>
       </div>
     </section>
+
+    <div class="phoenix-modal hidden" id="phoenix-modal">
+      <div class="phoenix-card card">
+        <div class="phoenix-hero">Phoenix Visitor 🔥🐦</div>
+        <h2 id="phoenix-title">A magical phoenix has arrived</h2>
+        <p class="phoenix-copy" id="phoenix-message"></p>
+        <div class="phoenix-actions">
+          <button class="primary-button" id="phoenix-accept-button" type="button">Buy Bigger Shop</button>
+          <button class="secondary-button" id="phoenix-close-button" type="button">Close</button>
+        </div>
+      </div>
+    </div>
   </main>
 
   <script src="./script.js"></script>
