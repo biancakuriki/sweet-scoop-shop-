@@ -432,7 +432,7 @@ function openPhoenixModal() {
   }
 
   phoenixTitleEl.textContent = "The phoenix will come back later";
-  phoenixMessageEl.textContent = "Hey do you whant to have a bigger shop? You do not have 500 yet. After you play ten rounds i will come back.";
+  phoenixMessageEl.textContent = `Hey do you whant to have a bigger shop? You do not have $${PHOENIX_SHOP_COST} yet. After you play ten rounds i will come back.`;
   phoenixAcceptButton.classList.add("hidden");
   phoenixAcceptButton.disabled = true;
   nextPhoenixRound = roundsPlayed + PHOENIX_RETURN_GAP;
@@ -458,8 +458,12 @@ function upgradeToLevel2Shop() {
   }
   saveProgress();
   updateStats();
+  renderOptions();
   renderShop();
+  renderSellMenu();
+  renderLeaderboard();
   closePhoenixModal();
+  showScreen(startScreen);
   playSuccessSound();
   createSparkles(14);
   setReaction("The phoenix made your shop bigger. Welcome to Level 2! A special level is waiting.");
