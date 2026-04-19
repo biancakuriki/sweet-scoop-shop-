@@ -70,6 +70,15 @@
             <div class="wallet-badge">Dollars: $<span id="wallet-amount">0</span></div>
           </div>
           <p class="shop-copy">Every 5 score gives you $1. Your money and unlocks are saved, and the shop changes every 2 rounds.</p>
+          <div class="shop-progress-panel">
+            <p class="shop-progress-line">Unlocked shop: <span id="unlocked-shop-level">1 - Shop 1</span></p>
+            <p class="shop-progress-line">Playing in: <span id="selected-shop-level">1 - Shop 1</span></p>
+            <p class="shop-progress-line">Difficulty: <span id="shop-difficulty">Sweet Start · 60s</span></p>
+            <label class="shop-selector hidden" id="shop-selector-wrap" for="shop-selector">
+              Choose your shop:
+              <select id="shop-selector"></select>
+            </label>
+          </div>
           <div class="shop-items" id="shop-items"></div>
         </div>
 
