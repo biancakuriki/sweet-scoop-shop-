@@ -819,11 +819,19 @@ h3 {
   background: linear-gradient(180deg, rgba(255, 250, 242, 0.96), rgba(255, 233, 210, 0.95));
 }
 
+.golden-fox-card {
+  background: linear-gradient(180deg, rgba(255, 252, 228, 0.98), rgba(255, 233, 160, 0.95));
+}
+
 .phoenix-hero {
   margin-bottom: 12px;
   font-size: 1.05rem;
   font-weight: 700;
   color: #a4541a;
+}
+
+.golden-fox-hero {
+  color: #946100;
 }
 
 .phoenix-copy {

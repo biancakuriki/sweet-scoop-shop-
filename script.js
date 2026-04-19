@@ -3,9 +3,12 @@ const LEADERBOARD_LIMIT = 5;
 const BASE_SHOP_PAGE_SIZE = 3;
 const LEVEL_2_SHOP_PAGE_SIZE = 5;
 const SHOP_ROTATE_EVERY_ROUNDS = 2;
-const PHOENIX_FIRST_ROUND = 15;
+const PHOENIX_FIRST_ROUND = 5;
 const PHOENIX_RETURN_GAP = 10;
 const PHOENIX_SHOP_COST = 150;
+const GOLDEN_FOX_ROUND = 15;
+const GOLDEN_FOX_MIN_DOLLARS = 100;
+const GOLDEN_FOX_REWARD_DOLLARS = 500;
 const SPECIAL_LEVEL_TIME = 45;
 
 const customers = [
@@ -139,6 +142,11 @@ const phoenixTitleEl = document.getElementById("phoenix-title");
 const phoenixMessageEl = document.getElementById("phoenix-message");
 const phoenixAcceptButton = document.getElementById("phoenix-accept-button");
 const phoenixCloseButton = document.getElementById("phoenix-close-button");
+const goldenFoxModalEl = document.getElementById("golden-fox-modal");
+const goldenFoxTitleEl = document.getElementById("golden-fox-title");
+const goldenFoxMessageEl = document.getElementById("golden-fox-message");
+const goldenFoxAcceptButton = document.getElementById("golden-fox-accept-button");
+const goldenFoxCloseButton = document.getElementById("golden-fox-close-button");
 
 let score = 0;
 let streak = 0;
@@ -159,6 +167,8 @@ let shopRotationIndex = 0;
 let shopLevel = 1;
 let nextPhoenixRound = PHOENIX_FIRST_ROUND;
 let phoenixOfferPending = false;
+let goldenFoxVisited = false;
+let goldenFoxOfferPending = false;
 let pendingSpecialLevel = false;
 let specialLevelPlayed = false;
 let isSpecialLevelActive = false;
@@ -199,6 +209,7 @@ function getSaveState() {
     shopRotationIndex,
     shopLevel,
     nextPhoenixRound,
+    goldenFoxVisited,
     pendingSpecialLevel,
     specialLevelPlayed,
     leaderboard,
@@ -239,6 +250,10 @@ function loadProgress() {
     shopRotationIndex = Number.isFinite(saved.shopRotationIndex) ? saved.shopRotationIndex % shopCatalog.length : 0;
     shopLevel = Number.isFinite(saved.shopLevel) ? saved.shopLevel : 1;
     nextPhoenixRound = Number.isFinite(saved.nextPhoenixRound) ? saved.nextPhoenixRound : PHOENIX_FIRST_ROUND;
+    if (shopLevel < 2 && roundsPlayed < PHOENIX_FIRST_ROUND) {
+      nextPhoenixRound = PHOENIX_FIRST_ROUND;
+    }
+    goldenFoxVisited = Boolean(saved.goldenFoxVisited);
     pendingSpecialLevel = Boolean(saved.pendingSpecialLevel);
     specialLevelPlayed = Boolean(saved.specialLevelPlayed);
     leaderboard = Array.isArray(saved.leaderboard) ? saved.leaderboard.slice(0, LEADERBOARD_LIMIT) : [];
@@ -419,6 +434,10 @@ function shouldShowPhoenix() {
   return shopLevel < 2 && roundsPlayed >= nextPhoenixRound;
 }
 
+function shouldShowGoldenFox() {
+  return !goldenFoxVisited && roundsPlayed >= GOLDEN_FOX_ROUND;
+}
+
 function openPhoenixModal() {
   phoenixOfferPending = true;
   phoenixModalEl.classList.remove("hidden");
@@ -442,6 +461,48 @@ function openPhoenixModal() {
 function closePhoenixModal() {
   phoenixOfferPending = false;
   phoenixModalEl.classList.add("hidden");
+}
+
+function openGoldenFoxModal() {
+  goldenFoxVisited = true;
+  goldenFoxOfferPending = true;
+  goldenFoxModalEl.classList.remove("hidden");
+
+  if (dollars >= GOLDEN_FOX_MIN_DOLLARS) {
+    goldenFoxTitleEl.textContent = "The golden fox found your rich shop";
+    goldenFoxMessageEl.textContent = `Hello! You reached at least $${GOLDEN_FOX_MIN_DOLLARS}. I can upgrade your dollars to $${GOLDEN_FOX_REWARD_DOLLARS}.`;
+    goldenFoxAcceptButton.classList.remove("hidden");
+    goldenFoxAcceptButton.disabled = false;
+    saveProgress();
+    return;
+  }
+
+  goldenFoxTitleEl.textContent = "The golden fox says hello";
+  goldenFoxMessageEl.textContent = `Hello! Come back when you have at least $${GOLDEN_FOX_MIN_DOLLARS}, and I will upgrade your dollars to $${GOLDEN_FOX_REWARD_DOLLARS}.`;
+  goldenFoxAcceptButton.classList.add("hidden");
+  goldenFoxAcceptButton.disabled = true;
+  saveProgress();
+}
+
+function closeGoldenFoxModal() {
+  goldenFoxOfferPending = false;
+  goldenFoxModalEl.classList.add("hidden");
+}
+
+function claimGoldenFoxReward() {
+  if (dollars < GOLDEN_FOX_MIN_DOLLARS) {
+    return;
+  }
+
+  dollars = GOLDEN_FOX_REWARD_DOLLARS;
+  goldenFoxOfferPending = false;
+  saveProgress();
+  updateStats();
+  closeGoldenFoxModal();
+  showScreen(startScreen);
+  playSuccessSound();
+  createSparkles(16);
+  setReaction("The golden fox upgraded your dollars to $500.");
 }
 
 function upgradeToLevel2Shop() {
@@ -811,7 +872,9 @@ function endGame() {
   renderLeaderboard();
   showScreen(resultScreen);
 
-  if (shouldShowPhoenix()) {
+  if (shouldShowGoldenFox()) {
+    openGoldenFoxModal();
+  } else if (shouldShowPhoenix()) {
     openPhoenixModal();
   }
 }
@@ -948,6 +1011,8 @@ playAgainButton.addEventListener("click", () => {
 });
 phoenixAcceptButton.addEventListener("click", upgradeToLevel2Shop);
 phoenixCloseButton.addEventListener("click", closePhoenixModal);
+goldenFoxAcceptButton.addEventListener("click", claimGoldenFoxReward);
+goldenFoxCloseButton.addEventListener("click", closeGoldenFoxModal);
 resetButton.addEventListener("click", () => {
   resetBuilder();
   setReaction("Your ice cream was cleared. Build the order again.");
