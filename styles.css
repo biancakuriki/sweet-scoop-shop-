@@ -281,6 +281,22 @@ h3 {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(255, 239, 220, 0.84));
 }
 
+.goals-panel {
+  margin: 0 0 28px;
+  padding: 22px;
+  text-align: left;
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(239, 248, 223, 0.84));
+}
+
+.collection-panel {
+  margin: 0 0 28px;
+  padding: 22px;
+  text-align: left;
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(239, 242, 255, 0.84));
+}
+
 .shop-header {
   display: flex;
   justify-content: space-between;
@@ -353,6 +369,91 @@ h3 {
 .leaderboard-list {
   display: grid;
   gap: 12px;
+}
+
+.daily-challenge-list,
+.collection-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.daily-challenge,
+.collection-card,
+.collection-summary {
+  padding: 16px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 8px 18px rgba(147, 96, 120, 0.1);
+}
+
+.daily-challenge {
+  display: grid;
+  gap: 8px;
+}
+
+.collection-grid {
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  margin-bottom: 14px;
+}
+
+.challenge-badge {
+  color: #4c6f00;
+}
+
+.collection-summary {
+  margin-bottom: 14px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.collection-card {
+  text-align: center;
+}
+
+.collection-card.locked {
+  opacity: 0.65;
+}
+
+.collection-emoji {
+  display: block;
+  font-size: 2.4rem;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.collection-name {
+  font-weight: 700;
+}
+
+.challenge-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.challenge-progress {
+  height: 12px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(230, 214, 224, 0.7);
+}
+
+.challenge-progress-fill,
+.patience-fill {
+  height: 100%;
+  border-radius: inherit;
+  transition: width 180ms ease, background 180ms ease;
+}
+
+.challenge-progress-fill {
+  background: linear-gradient(180deg, #9de2ac, #5bc27c);
+}
+
+.challenge-status,
+.collection-meta {
+  color: var(--muted);
+  font-weight: 600;
 }
 
 .leaderboard-row {
@@ -485,7 +586,7 @@ h3 {
 
 .top-bar {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 14px;
   padding: 16px;
   margin-bottom: 20px;
@@ -587,6 +688,31 @@ h3 {
   background: #fff1a8;
   color: #7c5a00;
   font-size: 0.98rem;
+}
+
+.patience-panel {
+  margin: 14px 0 12px;
+}
+
+.patience-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.patience-meter {
+  height: 14px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(222, 212, 218, 0.8);
+}
+
+.patience-fill {
+  width: 100%;
+  background: linear-gradient(180deg, #9ce6b0, #69cf86);
 }
 
 .second-order {
@@ -806,6 +932,52 @@ h3 {
   gap: 18px;
 }
 
+.builder-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.power-panel {
+  margin: 0 0 20px;
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+.power-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.power-button {
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #fff8d5, #ffe8a0);
+  color: #7a5600;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 8px 16px rgba(147, 96, 120, 0.12);
+}
+
+.power-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.power-button small {
+  display: block;
+  margin-top: 6px;
+  color: rgba(90, 67, 0, 0.78);
+  font-size: 0.83rem;
+}
+
 .option-row {
   display: flex;
   flex-wrap: wrap;
@@ -823,6 +995,12 @@ h3 {
 .option-button.selected {
   background: linear-gradient(180deg, var(--mint), var(--mint-deep));
   color: #18493b;
+}
+
+.option-button.hint-target {
+  outline: 3px solid rgba(255, 191, 72, 0.95);
+  outline-offset: 2px;
+  background: linear-gradient(180deg, #fff7cc, #ffe7a1);
 }
 
 .serve-button {

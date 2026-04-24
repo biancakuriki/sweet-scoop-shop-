@@ -112,6 +112,29 @@
           <div class="leaderboard-list" id="leaderboard-list"></div>
         </div>
 
+        <div class="goals-panel">
+          <div class="shop-header">
+            <div>
+              <p class="eyebrow">Daily Challenge</p>
+              <h2>Today's Goals</h2>
+            </div>
+            <div class="wallet-badge challenge-badge">Reward Dollars</div>
+          </div>
+          <p class="shop-copy">Fresh goals arrive each day. Complete them during play to earn bonus dollars.</p>
+          <div class="daily-challenge-list" id="daily-challenge-list"></div>
+        </div>
+
+        <div class="collection-panel">
+          <div class="shop-header">
+            <div>
+              <p class="eyebrow">Sticker Book</p>
+              <h2>Customers</h2>
+            </div>
+          </div>
+          <div class="collection-summary" id="collection-summary"></div>
+          <div class="collection-grid" id="customer-collection"></div>
+        </div>
+
         <button class="primary-button" id="start-button">Play</button>
       </div>
     </section>
@@ -134,6 +157,10 @@
           <span class="stat-label">Dollars</span>
           <span class="stat-value" id="game-wallet">0</span>
         </div>
+        <div class="stat">
+          <span class="stat-label">Mood</span>
+          <span class="stat-value" id="customer-mood">Happy</span>
+        </div>
       </div>
 
       <div class="game-layout">
@@ -152,6 +179,15 @@
           <div class="order-bubble">
             <p class="order-title">Order</p>
             <p class="order-line special-order" id="order-special"></p>
+            <div class="patience-panel">
+              <div class="patience-header">
+                <span>Patience</span>
+                <span id="patience-label">Relaxed</span>
+              </div>
+              <div class="patience-meter">
+                <div class="patience-fill" id="patience-fill"></div>
+              </div>
+            </div>
             <p class="order-line" id="order-container">Cup</p>
             <p class="order-line" id="order-flavor">Vanilla</p>
             <p class="order-line" id="order-topping">No topping</p>
@@ -172,7 +208,10 @@
               <p class="eyebrow">Build the order</p>
               <h2>Your Ice Cream</h2>
             </div>
-            <button class="secondary-button" id="reset-button" type="button">Reset</button>
+            <div class="builder-actions">
+              <button class="secondary-button" id="pause-button" type="button">Pause</button>
+              <button class="secondary-button" id="reset-button" type="button">Reset</button>
+            </div>
           </div>
 
           <div class="icecream-stage">
@@ -180,6 +219,14 @@
               <div class="preview-empty">Choose a cup or cone to begin</div>
             </div>
             <div class="sparkle-layer" id="sparkle-layer" aria-hidden="true"></div>
+          </div>
+
+          <div class="power-panel">
+            <div>
+              <p class="eyebrow">Power-Ups</p>
+              <h3>Shop Helper Tray</h3>
+            </div>
+            <div class="power-buttons" id="power-buttons"></div>
           </div>
 
           <div class="builder-controls">
@@ -210,6 +257,7 @@
         <h2>Ice Cream Time Is Over</h2>
         <p class="final-score">Final score: <span id="final-score">0</span></p>
         <p class="final-score">Dollars: $<span id="final-wallet">0</span></p>
+        <p class="final-score">Daily rewards today: $<span id="final-daily-reward">0</span></p>
         <p class="final-message" id="final-message">You made the shop sparkle.</p>
         <button class="primary-button" id="play-again-button">Back To Shop</button>
       </div>
