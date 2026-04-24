@@ -50,6 +50,7 @@ const customerUnlocksByShop = {
     { name: "Bean", emoji: "🐹", subtitle: "Hamster who rushes to the counter" },
   ],
   4: [
+    { name: "Waddles", emoji: "🐧", subtitle: "Penguin who loves chilly scoops and tidy toppings" },
     { name: "Marlow", emoji: "🦁", subtitle: "Little lion with a loud ice cream order" },
     { name: "Puddle", emoji: "🐸", subtitle: "Frog who hops in during the lunch rush" },
   ],
